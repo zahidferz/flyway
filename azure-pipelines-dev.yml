@@ -32,7 +32,7 @@ jobs:
     displayName: 'Flyway Migration to $(Release.EnvironmentName)'
     inputs:
       containerregistrytype: 'Container Registry'
-      dockerComposeFile: '$(System.DefaultWorkingDirectory)/Git_gestionix_gx-boa-auth/db/docker-compose.migration.yml'
+      dockerComposeFile: './db/docker-compose.migration.yml'
       dockerComposeFileArgs: |
         SQL_DATABASE=$(SQL-DATABASE)
         SQL_HOST=$(SQL-HOST)
