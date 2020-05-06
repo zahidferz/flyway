@@ -26,7 +26,13 @@ jobs:
     buildVersion: "$(appVersion)"
   steps:
   - bash: echo "##vso[build.updatebuildnumber]$(buildVersion)" # Update build number in Pipeline UI
-    displayName: Update Migration number   
+    displayName: Update Migration number  
+
+  - task: AzureKeyVault@1
+    displayName: ''
+    inputs:
+      azureSubscription: 'gx-azure'
+      KeyVaultName: 'ddd-da-sql-production'
 
 
 - task: DockerCompose@0
