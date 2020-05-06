@@ -32,7 +32,7 @@ jobs:
     displayName: ''
     inputs:
       azureSubscription: 'gx-azure'
-      KeyVaultName: 'ddd-da-sql-production'
+      KeyVaultName: 'ddd-da-sql-test'
 
   - task: DockerCompose@0
     displayName: 'Flyway Migration to $(Release.EnvironmentName)'
