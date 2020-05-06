@@ -1,0 +1,44 @@
+# Docker image.
+# Build a Docker image to deploy, run, or push to a container registry.
+# Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+name: $(SourceBranchName)
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+jobs:
+- job: GetVersion
+  displayName: Get Version
+  steps:
+  - bash: |
+     sqls=$(find ./db/migrations/versioned/ -type f -exec basename {} \;)
+      last=`echo $sqls | sort -V | awk '{ print $1}'`
+      VERSIONT=${last%%_*}
+      echo "##vso[task.setvariable variable=version;isOutput=true]$VERSIONT"
+    name: App 
+
+- job: Migrate
+  displayName: Migration
+  dependsOn: GetVersion
+  variables:
+    appVersion: $[ dependencies.GetVersion.outputs['App.version'] ]
+    buildVersion: "$(appVersion)"
+  steps:
+  - bash: echo "##vso[build.updatebuildnumber]$(buildVersion)" # Update build number in Pipeline UI
+    displayName: Update Migration number   
+
+
+- task: DockerCompose@0
+  displayName: 'Flyway Migration to $(Release.EnvironmentName)'
+  inputs:
+    dockerComposeFile: '$(System.DefaultWorkingDirectory)/Git_gestionix_gx-boa-auth/db/docker-compose.migration.yml'
+    dockerComposeFileArgs: |
+     SQL_DATABASE=$(SQL-DATABASE)
+     SQL_HOST=$(SQL-HOST)
+     SQL_PASS=$(SQL-PASS)
+     SQL_PORT=$(SQL-PORT)
+     SQL_USER=$(SQL-USER)
+    dockerComposeCommand: 'up --build --exit-code-from flyway'
+
+
