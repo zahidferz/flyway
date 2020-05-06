@@ -28,17 +28,18 @@ jobs:
   - bash: echo "##vso[build.updatebuildnumber]$(buildVersion)" # Update build number in Pipeline UI
     displayName: Update Migration number   
 
-
-- task: DockerCompose@0
-  displayName: 'Flyway Migration to $(Release.EnvironmentName)'
-  inputs:
-    dockerComposeFile: '$(System.DefaultWorkingDirectory)/Git_gestionix_gx-boa-auth/db/docker-compose.migration.yml'
-    dockerComposeFileArgs: |
-     SQL_DATABASE=$(SQL-DATABASE)
-     SQL_HOST=$(SQL-HOST)
-     SQL_PASS=$(SQL-PASS)
-     SQL_PORT=$(SQL-PORT)
-     SQL_USER=$(SQL-USER)
-    dockerComposeCommand: 'up --build --exit-code-from flyway'
+  - task: DockerCompose@0
+    displayName: 'Flyway Migration to $(Release.EnvironmentName)'
+    inputs:
+      containerregistrytype: 'Container Registry'
+      dockerComposeFile: '$(System.DefaultWorkingDirectory)/Git_gestionix_gx-boa-auth/db/docker-compose.migration.yml'
+      dockerComposeFileArgs: |
+        SQL_DATABASE=$(SQL-DATABASE)
+        SQL_HOST=$(SQL-HOST)
+        SQL_PASS=$(SQL-PASS)
+        SQL_PORT=$(SQL-PORT)
+        SQL_USER=$(SQL-USER)
+      action: 'Run a Docker Compose command'
+      dockerComposeCommand: 'up --build --exit-code-from flyway'
 
 
